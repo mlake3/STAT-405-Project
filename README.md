@@ -8,7 +8,7 @@
 6) Clone all the scripts with `git clone github:....`.
 7) Run `sbatch submitCE.sh` to parallelly collect all data of each currency pair into one csv file. All these csv files will be saved in directory named `allExchanges`.
 
-You should have the following csv files:
-![](imageName.png)
+You should have the following csv files in your `allExchanges` directory:
+![exchanges files](exchanges.png)
 
 These 19 csv files are the ones that will be used in 19 parallel jobs to do our statistical analysis.

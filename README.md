@@ -1,4 +1,7 @@
-## <span style="font-size: 20px;">SETTING UP THE DATA</span>
+## GENERAL INFORMATION
+- Add information about the project
+
+## SETTING UP THE DATA
 
 1) Download archive.zip file containing all the data [here](https://www.kaggle.com/datasets/joseserrat/forex-tick-data-huge-database-part-2).
 2) Copy and paste (with `scp`) the .zip file into your working directory of your remote computer.

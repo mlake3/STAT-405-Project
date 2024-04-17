@@ -1,8 +1,6 @@
 #!/bin/bash
 
-# This shell script automates downloading the archive.zip online, and then sets up the file for the project.
-wget -O archive.zip https://pages.stat.wisc.edu/~jwvanzeeland/archive.zip
-
+# Please make sure you have downloaded the file from the website stated.
 unzip archive.zip
 
 rm archive.zip

@@ -4,7 +4,9 @@ This project entails comprehensive analysis of major currency pairs within the f
 ## SETTING UP THE DATA
 
 1) Clone the repository into a new folder with `git clone https://github.com/mlake3/STAT-405-Project.git folderName`. From now on, work in this folder.
-2) Run `sbatch submit.sh` to set up the data and parallelly collect all data of each currency pair into one csv file. All these csv files will be saved in directory named `allExchanges`.
+2) Download archive.zip file containing all the data [here](https://www.kaggle.com/datasets/joseserrat/forex-tick-data-huge-database-part-2) into your computer.
+3) Copy and paste (with `scp`) the .zip file into the working directory.
+4) Run `sbatch submit.sh` to set up the data and parallelly collect all data of each currency pair into one csv file. All these csv files will be saved in directory named `allExchanges`.
 
 You should have the following csv files in your `allExchanges` directory:
 ![exchanges files](exchanges.png)

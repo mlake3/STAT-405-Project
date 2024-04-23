@@ -37,3 +37,6 @@ daily_data = data %>% select(market, spread, date) %>% group_by(date) %>% summar
 
 #Graph Market Price of Exchange
 ggplot(data = daily_data, aes(x = date)) + geom_ribbon(aes(ymin = market_mean - market_sd, ymax = market_mean + market_sd), fill = 'lightgrey') + geom_line(aes(y = market_mean), color = "blue") + geom_line(aes(y = market_min), color = "red") + geom_line(aes(y = market_max), color = "red") + ylab("Exchange Rate") + xlab("Date") + ggtitle(paste0("Daily Price graph for ",data$exchange[1]))
+
+#Save Graph
+ggsave(paste0("Daily_", exchange, "_Graph.png"))

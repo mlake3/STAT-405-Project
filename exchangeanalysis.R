@@ -1,11 +1,18 @@
-#Library Needed
+#Libraries Needed
 library(tidyverse)
 library(stringr)
 library(dplyr)
 library(ggplot2)
 
+#Get Argument
+args = (commandArgs(trailingOnly = TRUE))
+if (length(args) == 1){
+  file = toString(args[1])
+} else {
+  cat('usage: Rscript exchangeanalysis.R <file>\n')
+}
+
 #Read/clean Data
-file = #exchange file from array
 data = read.csv(file)
 data = data %>% rename("exchange" = 1, "date_time" = 2, "bid"=3, "ask"=4)
 data = data %>% mutate("market" = (ask + bid )/2, "spread" = ask - bid, "date" =  as.Date(paste0(str_sub(date_time,1,4),"-",str_sub(date_time,5,6),"-", str_sub(date_time,7,8))))
@@ -17,7 +24,7 @@ ex_market_sd = sd(data$market)
 ex_spread_mean = mean(data$spread)
 ex_spread_sd = sd(data$spread)
 
-#Write Important Data
+#Write Summary Data
 output = data.frame("exchange" = exchange, "market_mean"=ex_market_mean, "market_sd"=ex_market_sd, "spread_mean" = ex_spread_mean, "spread_sd"= ex_spread_sd)
 if (file.exists("summary.csv")){
   write.table(output, file = "summary.csv", append = TRUE, sep = ",", col.names = FALSE, row.names = FALSE)

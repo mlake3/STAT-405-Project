@@ -16,8 +16,8 @@ if (length(args) == 1){
 
 #Read/clean Data
 data = read.csv(file)
-data = data %>% rename("exchange" = 1, "date_time" = 2, "bid"=3, "ask"=4)
-data = data %>% mutate("market" = (ask + bid )/2, "spread" = ask - bid, "date" =  as.Date(paste0(str_sub(date_time,1,4),"-",str_sub(date_time,5,6),"-", str_sub(date_time,7,8))))
+data = data %>% rename(exchange = 1, date_time = 2, bid=3, ask=4)
+data = data %>% mutate(bid = as.numeric(bid), ask = as.numeric(ask), market = (ask + bid )/2, spread = ask - bid, date =  as.Date(paste0(str_sub(date_time,1,4),"-",str_sub(date_time,5,6),"-", str_sub(date_time,7,8))))
 
 #Get Important Data
 exchange = substr(file,1,6)
@@ -45,7 +45,7 @@ curvature=trends$curvature
 spikiness=trends$spikiness
 
 #Write Summary Data
-output = data.frame(exchange = exchange, market_mean=ex_market_mean, market_sd=ex_market_sd, spread_mean = ex_spread_mean, spread_sd= ex_spread_sd,trend_strength = trend_strength , linearity = linearity, curvature= curvature,spikiness=spikiness)
+output = data.frame(exchanges = exchange, market_mean=ex_market_mean, market_sd=ex_market_sd, spread_mean = ex_spread_mean, spread_sd= ex_spread_sd,trend_strength = trend_strength , linearity = linearity, curvature= curvature,spikiness=spikiness)
 if (file.exists("summary.csv")){
   write.table(output, file = "summary.csv", append = TRUE, sep = ",", col.names = FALSE, row.names = FALSE)
 } else {

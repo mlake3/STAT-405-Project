@@ -3,6 +3,8 @@ library(tidyverse)
 library(stringr)
 library(dplyr)
 library(ggplot2)
+library(tsibble)
+library(feasts)
 
 #Get Argument
 args = (commandArgs(trailingOnly = TRUE))
@@ -24,8 +26,26 @@ ex_market_sd = sd(data$market)
 ex_spread_mean = mean(data$spread)
 ex_spread_sd = sd(data$spread)
 
+
+# Convert to tsibble
+data_ts <- data %>%
+  group_by(exchange, date) %>%
+  summarise(market = mean(market))%>%
+  as_tsibble(key = exchange, index = date)
+
+
+# Extract trend features
+trends <- data_ts %>%
+  features(market, features = feature_set(tags = "trend"))%>%
+  select(c(exchange,trend_strength,spikiness, linearity, curvature))
+
+trend_strength=trends$trend_strength
+linearity=trends$linearity
+curvature=trends$curvature
+spikiness=trends$spikiness
+
 #Write Summary Data
-output = data.frame("exchange" = exchange, "market_mean"=ex_market_mean, "market_sd"=ex_market_sd, "spread_mean" = ex_spread_mean, "spread_sd"= ex_spread_sd)
+output = data.frame(exchange = exchange, market_mean=ex_market_mean, market_sd=ex_market_sd, spread_mean = ex_spread_mean, spread_sd= ex_spread_sd,trend_strength = trend_strength , linearity = linearity, curvature= curvature,spikiness=spikiness)
 if (file.exists("summary.csv")){
   write.table(output, file = "summary.csv", append = TRUE, sep = ",", col.names = FALSE, row.names = FALSE)
 } else {

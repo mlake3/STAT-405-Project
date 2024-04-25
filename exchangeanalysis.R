@@ -20,7 +20,7 @@ data = data %>% rename(exchange = 1, date_time = 2, bid=3, ask=4)
 data = data %>% mutate(bid = as.numeric(bid), ask = as.numeric(ask), market = (ask + bid )/2, spread = ask - bid, date =  as.Date(paste0(str_sub(date_time,1,4),"-",str_sub(date_time,5,6),"-", str_sub(date_time,7,8))))
 
 #Get Important Data
-exchange = substr(file,1,6)
+exchange = str_match(file, "[A-Z]+")
 ex_market_mean = mean(data$market)
 ex_market_sd = sd(data$market)
 ex_spread_mean = mean(data$spread)

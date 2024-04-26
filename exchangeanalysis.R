@@ -55,6 +55,11 @@ if (file.exists("summary.csv")){
 #Get Daily Data
 daily_data = data %>% select(market, spread, date) %>% group_by(date) %>% summarise("market_mean" =  mean(market), "market_sd" = sd(market), market_max = max(market), market_min = min(market), "spread_mean" = mean(spread),"spread_sd" =  sd(spread))
 
+#Read in summary data for Bar Graph on Trend_strength
+trend_stats=read.csv("summary.csv")
+ggplot(trend_stats, aes(x=exchanges, y=trend_strength)) + 
+  geom_bar(stat = "identity")
+
 #Graph Market Price of Exchange
 ggplot(data = daily_data, aes(x = date)) + geom_ribbon(aes(ymin = market_mean - market_sd, ymax = market_mean + market_sd), fill = 'lightgrey') + geom_line(aes(y = market_mean), color = "blue") + geom_line(aes(y = market_min), color = "red") + geom_line(aes(y = market_max), color = "red") + ylab("Exchange Rate") + xlab("Date") + ggtitle(paste0("Daily Price graph for ",data$exchange[1]))
 

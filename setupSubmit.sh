@@ -32,6 +32,6 @@ jobId4=$(sbatch --array=1-19 \
                 --error="slurm_out/slurm-%A_%a.err \
                 --dependency=afterok:$jobId3 \
                 exchangeanalysis.sh)
-jobId4=$(echo $jobId4 | sed 's/Submitted batch job //'                
+jobId4=$(echo $jobId4 | sed 's/Submitted batch job //')                
 
 #run final analysis

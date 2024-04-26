@@ -1,6 +1,6 @@
 #!/bin/bash
 
-module load R/R-3.6.1
+module load R/R-4.0.1 
 
 
 # define array of exchanges to be used with task ID (19)

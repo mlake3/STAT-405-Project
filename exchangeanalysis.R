@@ -20,8 +20,12 @@ library(feasts)
 
 #Read/clean Data
 data = read.csv(file)
-data = data %>% rename(exchange = 1, date_time = 2, bid=3, ask=4)
-data = data %>% mutate(bid = as.numeric(bid), ask = as.numeric(ask), market = (ask + bid )/2, spread = ask - bid, date =  ymd(str_sub(date_time,1,8)))
+data = data %>% 
+  rename(exchange = 1, date_time = 2, bid=3, ask=4) %>% 
+  mutate(
+    bid = as.numeric(bid), ask = as.numeric(ask), market = (ask + bid )/2, spread = ask - bid,
+    date = ymd_hms(date_time)
+  )
 
 #Get Important Data
 exchange = str_match(file, "[A-Z]{6}")
@@ -48,24 +52,23 @@ linearity=trends$linearity
 curvature=trends$curvature
 spikiness=trends$spikiness
 
-#Write Summary Data
-output = data.frame(exchanges = exchange, market_mean=ex_market_mean, market_sd=ex_market_sd, spread_mean = ex_spread_mean, spread_sd= ex_spread_sd,trend_strength = trend_strength , linearity = linearity, curvature= curvature,spikiness=spikiness)
-if (file.exists("summary.csv")){
-  write.table(output, file = "summary.csv", append = TRUE, sep = ",", col.names = FALSE, row.names = FALSE)
-} else {
-  write.table(output, file = "summary.csv", append = TRUE, sep = ",", col.names = TRUE, row.names = FALSE)
-}
 
 #Get Daily Data
 daily_data = data %>% select(market, spread, date) %>% group_by(date) %>% summarise("market_mean" =  mean(market), "market_sd" = sd(market), market_max = max(market), market_min = min(market), "spread_mean" = mean(spread),"spread_sd" =  sd(spread))
-
-#Read in summary data for Bar Graph on Trend_strength
-trend_stats=read.csv("summary.csv")
-ggplot(trend_stats, aes(x=exchanges, y=trend_strength)) + 
-  geom_bar(stat = "identity")
 
 #Graph Market Price of Exchange
 ggplot(data = daily_data, aes(x = date)) + geom_ribbon(aes(ymin = market_mean - market_sd, ymax = market_mean + market_sd), fill = 'lightgrey') + geom_line(aes(y = market_mean), color = "blue") + geom_line(aes(y = market_min), color = "red") + geom_line(aes(y = market_max), color = "red") + ylab("Exchange Rate") + xlab("Date") + ggtitle(paste0("Daily Price graph for ",data$exchange[1]))
 
 #Save Graph
 ggsave(paste0("Daily_", exchange, "_Graph.png"))
+
+#Get slope
+slope = as.double(coef(lm(data = daily_data, market_mean ~ date))[2])
+
+#Write Summary Data
+output = data.frame(exchanges = exchange, market_mean=ex_market_mean, market_sd=ex_market_sd, spread_mean = ex_spread_mean, spread_sd= ex_spread_sd,trend_strength = trend_strength , linearity = linearity, curvature= curvature,spikiness=spikiness, slope = slope)
+if (file.exists("summary.csv")){
+  write.table(output, file = "summary.csv", append = TRUE, sep = ",", col.names = FALSE, row.names = FALSE)
+} else {
+  write.table(output, file = "summary.csv", append = TRUE, sep = ",", col.names = TRUE, row.names = FALSE)
+}

@@ -18,13 +18,21 @@ jobId2=$(sbatch --array=1-19 \
                 collectExchange.sh)
 jobId2=$(echo $jobId2 | sed 's/Submitted batch job //')
 
-
-#Run exchange analysis in parrallel
-jobId3=$(sbatch --array=1-19 \
+# Install required packages
+jobId3=$(sbatch --array=1-5 \
                 --output="slurm_out/slurm-%A_%a.out" \
                 --error="slurm_out/slurm-%A_%a.err" \
                 --dependency=afterok:$jobId2 \
-                exchangeanalysis.sh)
+                installPackages.sh)
 jobId3=$(echo $jobId3 | sed 's/Submitted batch job //')             
+
+
+#Run exchange analysis in parrallel
+jobId4=$(sbatch --array=1-19 \
+                --output="slurm_out/slurm-%A_%a.out" \
+                --error="slurm_out/slurm-%A_%a.err" \
+                --dependency=afterok:$jobId3 \
+                exchangeanalysis.sh)
+jobId4=$(echo $jobId4 | sed 's/Submitted batch job //')             
 
 #run final analysis

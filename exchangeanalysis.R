@@ -1,6 +1,6 @@
 #Get Argument
 args = (commandArgs(trailingOnly = TRUE))
-if (length(args) == 1){
+if (length(args) == 2){
   file = toString(args[1])
   RpackagesDir = args[2]
 } else {

@@ -1,4 +1,15 @@
-#Libraries Needed
+#Get Argument
+args = (commandArgs(trailingOnly = TRUE))
+if (length(args) == 1){
+  file = toString(args[1])
+  RpackagesDir = args[2]
+} else {
+  cat('usage: Rscript exchangeanalysis.R <file> <RpackagesDir>\n')
+}
+
+.libPaths(new=c(RpackagesDir, .libPaths()))
+
+# Libraries
 library(tidyr)
 library(stringr)
 library(dplyr)
@@ -6,13 +17,6 @@ library(ggplot2)
 library(tsibble)
 library(feasts)
 
-#Get Argument
-args = (commandArgs(trailingOnly = TRUE))
-if (length(args) == 1){
-  file = toString(args[1])
-} else {
-  cat('usage: Rscript exchangeanalysis.R <file>\n')
-}
 
 #Read/clean Data
 data = read.csv(file)

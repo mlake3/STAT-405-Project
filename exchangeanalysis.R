@@ -44,13 +44,6 @@ linearity=trends$linearity
 curvature=trends$curvature
 spikiness=trends$spikiness
 
-#Write Summary Data
-output = data.frame(exchanges = exchange, market_mean=ex_market_mean, market_sd=ex_market_sd, spread_mean = ex_spread_mean, spread_sd= ex_spread_sd,trend_strength = trend_strength , linearity = linearity, curvature= curvature,spikiness=spikiness)
-if (file.exists("summary.csv")){
-  write.table(output, file = "summary.csv", append = TRUE, sep = ",", col.names = FALSE, row.names = FALSE)
-} else {
-  write.table(output, file = "summary.csv", append = TRUE, sep = ",", col.names = TRUE, row.names = FALSE)
-}
 
 #Get Daily Data
 daily_data = data %>% select(market, spread, date) %>% group_by(date) %>% summarise("market_mean" =  mean(market), "market_sd" = sd(market), market_max = max(market), market_min = min(market), "spread_mean" = mean(spread),"spread_sd" =  sd(spread))
@@ -60,3 +53,14 @@ ggplot(data = daily_data, aes(x = date)) + geom_ribbon(aes(ymin = market_mean - 
 
 #Save Graph
 ggsave(paste0("Daily_", exchange, "_Graph.png"))
+
+#Get slope
+slope = as.double(coef(lm(data = daily_data, market_mean ~ date))[2])
+
+#Write Summary Data
+output = data.frame(exchanges = exchange, market_mean=ex_market_mean, market_sd=ex_market_sd, spread_mean = ex_spread_mean, spread_sd= ex_spread_sd,trend_strength = trend_strength , linearity = linearity, curvature= curvature,spikiness=spikiness, slope = slope)
+if (file.exists("summary.csv")){
+  write.table(output, file = "summary.csv", append = TRUE, sep = ",", col.names = FALSE, row.names = FALSE)
+} else {
+  write.table(output, file = "summary.csv", append = TRUE, sep = ",", col.names = TRUE, row.names = FALSE)
+}

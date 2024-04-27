@@ -2,7 +2,7 @@ rm(list=ls())
 
 ## Run to install all packages
 args = (commandArgs(trailingOnly=TRUE))
-if(length(args) == 1){
+if(length(args) == 2){
   RpackagesDir = args[1]
   libr = args[2]
 } else {

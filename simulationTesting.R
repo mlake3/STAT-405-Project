@@ -2,7 +2,7 @@ library(tidyverse)
 library(lubridate)
 
 historical_data = # read csvs jan through april
-  simulated_data = # read csvs may through august
+simulated_data = # read csvs may through august
   
 historical_start = as.Date("2023-01-01")
 historical_end = as.Date("2023-04-30")

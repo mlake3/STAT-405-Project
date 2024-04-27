@@ -3,7 +3,7 @@
 # Install packages needed for analysis
 module load R/R-4.0.1
 
-packages=("lubridate" "tidyverse" "feasts" "tsibble" "tidyquant")
+packages=("lubridate" "tidyverse" "feasts" "tsibble")
 
 n=$SLURM_ARRAY_TASK_ID
 index=$(($n-1))

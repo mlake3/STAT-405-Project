@@ -129,64 +129,74 @@ simulated_data <- simulated_data %>%
 
 
 
-# Define simulation parameters
-historical_start = as.Date("2023-01-01")
-historical_end = as.Date("2023-04-30")
-simulation_start = as.Date("2023-05-01")
-simulation_end = as.Date("2023-08-31")
-simulation_days = as.numeric(simulation_end - simulation_start) + 1
+# Set initial parameters, can adjust based on travel budget, vacation duration, number of simulations, number of exchanges, etc...
+amount_money = 10000
+travel_duration = 123 # days
+num_exchanges_options = 1:5
+num_scenarios = 100
 
-simulate_exchanges <- function(data, initial_amount, num_exchanges) {
-  if (nrow(data) < num_exchanges) {
-    stop("Not enough data points for the number of exchanges specified")
+perform_simulation <- function(num_exchanges, currency_pair) {
+  specific_data <- simulated_data %>% filter(exchange == currency_pair)
+  results <- numeric(num_scenarios)  # Store results of each simulation
+  
+  if (nrow(specific_data) == 0) {
+    warning(paste("No data found for currency pair:", currency_pair))
+    return(NA)
   }
   
-  results_single <- vector("numeric", length = nrow(data))
-  results_multiple <- vector("numeric", length = nrow(data))
-  interval_days <- max(1, floor(nrow(data) / num_exchanges))  # Avoid division by zero
+  # Define the full period for exchanges
+  full_period <- as.Date(max(specific_data$date)) - as.Date(min(specific_data$date))
   
-  for (i in 1:nrow(data)) {
-    results_single[i] <- initial_amount * (1 + ifelse(data$score[i] > 0, data$market_daily[i], -data$market_daily[i]) / 100)
+  for (simulation in 1:num_scenarios) {
+    # Initialize money in base and foreign currencies
+    base_currency_amount <- amount_money
+    foreign_currency_amount <- 0
     
-    for (j in seq(i, min(i + interval_days - 1, nrow(data)))) {
-      results_multiple[i] <- results_multiple[i] + initial_amount / num_exchanges * (1 + ifelse(data$score[j] > 0, data$market_daily[j], -data$market_daily[j]) / 100)
+    for (exchange_index in 1:num_exchanges) {
+      # Calculate the time of the next exchange
+      if (exchange_index == 1) {
+        exchange_date <- as.Date(min(specific_data$date))
+      } else {
+        exchange_date <- exchange_date + floor(full_period / num_exchanges)
+      }
+      
+      # Find the closest rate up to the exchange date
+      rate_on_date <- specific_data %>%
+        filter(date <= exchange_date) %>%
+        summarize(closest_rate = last(market_daily)) %>%
+        pull(closest_rate)
+      
+      # Convert a portion of base currency at the sampled rate
+      exchange_amount <- base_currency_amount / (num_exchanges - exchange_index + 1)
+      converted_amount <- exchange_amount * rate_on_date
+      base_currency_amount <- base_currency_amount - exchange_amount
+      foreign_currency_amount <- foreign_currency_amount + converted_amount
     }
+    
+    # Final result is all foreign currency plus any remaining base currency
+    total_after_all_exchanges <- foreign_currency_amount + base_currency_amount
+    results[simulation] <- total_after_all_exchanges
   }
   
-  list(single = mean(results_single), multiple = mean(results_multiple))
+  # Average result over all simulations
+  return(mean(results, na.rm = TRUE))
 }
 
-# Simplified testing of the simulation function
-test_results <- simulate_exchanges(simulated_data[1:100, ], 100, 5)
-print(test_results)
+currency_pairs = unique(simulated_data$exchange)
 
+# Initialize the matrix to hold simulation outcomes for each currency pair
+simulation_outcomes = matrix(nrow = length(num_exchanges_options), ncol = length(currency_pairs))
+colnames(simulation_outcomes) = currency_pairs
+rownames(simulation_outcomes) = paste(num_exchanges_options, "exchanges")
 
-num_simulations = 100
-initial_amount = 100
-num_exchanges = 5
-# Interval for multiple exchanges
+# Perform simulations for each currency pair and number of exchanges
+for (currency_pair in currency_pairs) {
+  for (num_exchanges in num_exchanges_options) {
+    simulation_outcomes[num_exchanges, currency_pair] = perform_simulation(num_exchanges, currency_pair)
+  }
+}
 
-all_results <- replicate(num_simulations, simulate_exchanges(simulated_data, initial_amount, num_exchanges), simplify = FALSE)
+# Matrix to DF 
+simulation_results_df = as.data.frame(simulation_outcomes)
 
-# Calculate averages of simulations
-mean_single <- mean(sapply(all_results, function(x) x$single))
-mean_multiple <- mean(sapply(all_results, function(x) x$multiple))
-
-# Print results
-print(paste("Average Return for Single Exchange:", mean_single))
-print(paste("Average Return for Multiple Exchanges:", mean_multiple))
-
-test_results <- simulate_exchanges(simulated_data[1:100, ], 100, 5)
-print(test_results)
-
-
-print(head(historical_data))
-print(head(simulated_data))
-
-# Check summary statistics for scores and slopes to ensure they are reasonable
-summary(historical_data$score)
-summary(simulated_data$score)
-
-# Run a smaller number of simulations for initial testing
-test_results <- simulate_exchanges(simulated_data, initial_amount, num_exchanges)
-print(test_results)
+print(simulation_results_df)

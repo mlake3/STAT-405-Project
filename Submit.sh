@@ -85,7 +85,7 @@ jobId4_5=$(echo $jobId4_5 | sed 's/Submitted batch job //')
 jobId5=$(sbatch --output="slurm_out/slurm-%A_%a.out" \
                 --error="slurm_out/slurm-%A_%a.err" \
 		--dependency=afterok:$jobId4_5 \
-                summaryanalysis.sh)
+                montecarloanalysis.sh)
 jobId5=$(echo $jobId5 | sed 's/Submitted batch job //')
 
 #Summary Data Analysis

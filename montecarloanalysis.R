@@ -1,3 +1,13 @@
+#Get Argument
+args = (commandArgs(trailingOnly = TRUE))
+if (length(args) == 1){
+  RpackagesDir = args[1]
+} else {
+  cat('usage: Rscript summaryanalysis.R <RpackagesDir>\n')
+}
+
+.libPaths(new=c(RpackagesDir, .libPaths()))
+
 #Library Needed
 library(tidyverse)
 library(stringr)

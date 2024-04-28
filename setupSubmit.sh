@@ -78,4 +78,19 @@ jobId4_5=$(sbatch --array=1,11 \
 		--mem-per-cpu=2600M \
                 --dependency=afterok:$jobId3 \
                 exchangeanalysis.sh)
-jobId4_5=$(echo $jobId4_5 | sed 's/Submitted batch job //')             
+jobId4_5=$(echo $jobId4_5 | sed 's/Submitted batch job //')       
+
+
+#Monte Carlo Analysis
+jobId5=$(sbatch --output="slurm_out/slurm-%A_%a.out" \
+                --error="slurm_out/slurm-%A_%a.err" \
+		--dependency=afterok:$jobId4_5 \
+                summaryanalysis.sh)
+jobId5=$(echo $jobId5 | sed 's/Submitted batch job //')
+
+#Summary Data Analysis
+jobId6=$(sbatch --output="slurm_out/slurm-%A_%a.out" \
+                --error="slurm_out/slurm-%A_%a.err" \
+		--dependency=afterok:$jobId5 \
+                summaryanalysis.sh)
+jobId6=$(echo $jobId6 | sed 's/Submitted batch job //')

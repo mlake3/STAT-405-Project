@@ -5,7 +5,7 @@ unzip archive.zip
 
 rm archive.zip
 
-mkdir data
+mkdir -p data
 
 mv *202[23] data # move all the monthly directories into one file
 

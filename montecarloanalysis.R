@@ -210,3 +210,25 @@ for (currency_pair in currency_pairs) {
 simulation_results_df = as.data.frame(simulation_outcomes)
 
 print(simulation_results_df)
+
+
+# Find the maximum value for each currency pair and its associated number of exchanges
+find_optimal_exchanges <- function(simulation_df) {
+  optimal_exchanges_df <- data.frame('Currency Pair' = colnames(simulation_df))
+  
+  for(i in 1:ncol(simulation_df)) {
+    currency_pair <- colnames(simulation_df)[i]
+    max_value <- max(simulation_df[[currency_pair]], na.rm = TRUE)
+    optimal_exchanges_df[i, 'Max Value'] <- max_value
+    
+    optimal_exchanges <- which(simulation_df[[currency_pair]] == max_value)
+    
+    optimal_exchanges_df[i, 'Optimal Number of Exchanges'] <- optimal_exchanges[1]
+  }
+  
+  return(optimal_exchanges_df)
+}
+
+optimal_exchanges_df <- find_optimal_exchanges(simulation_results_df)
+
+print(optimal_exchanges_df)

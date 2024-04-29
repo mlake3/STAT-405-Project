@@ -84,7 +84,7 @@ jobId4_5=$(echo $jobId4_5 | sed 's/Submitted batch job //')
 #Monte Carlo Analysis
 jobId5=$(sbatch --output="slurm_out/slurm-%A_%a.out" \
                 --error="slurm_out/slurm-%A_%a.err" \
-		--dependency=afterok:$jobId4_5 \
+		--dependency=afterok:$jobId4_1:$jobId4_2:$jobId4_3:$jobId4_4:$jobId4_5 \
                 montecarloanalysis.sh)
 jobId5=$(echo $jobId5 | sed 's/Submitted batch job //')
 

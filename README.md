@@ -7,6 +7,7 @@ This project entails comprehensive analysis of major currency pairs within the f
 2) Download archive.zip file containing all the data [here](https://www.kaggle.com/datasets/joseserrat/forex-tick-data-huge-database-part-2) into your computer.
 3) Copy and paste (with `scp`) the .zip file into the working directory.
 4) Run `sbatch dataSetupSubmit.sh` to set up the data and parallelly collect all data of each currency pair into one csv file. All these csv files will be saved in directory named `allExchanges`.
+5) [Extra Step] To make sure you are able to run the analysis, run `sbatch installPackagesSubmit.sh` to get the necessary R packages.
 
 You should have the following csv files in your `allExchanges` directory:
 ![exchanges files](exchanges.png)

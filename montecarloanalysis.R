@@ -147,7 +147,7 @@ num_scenarios = 100
 
 perform_simulation <- function(num_exchanges, currency_pair) {
   specific_data <- simulated_data %>% filter(exchange == currency_pair)
-  results <- numeric(num_scenarios)  # Store results of each simulation
+  results = numeric(num_scenarios)  # Store results of each simulation
   
   if (nrow(specific_data) == 0) {
     warning(paste("No data found for currency pair:", currency_pair))
@@ -155,32 +155,36 @@ perform_simulation <- function(num_exchanges, currency_pair) {
   }
   
   # Define the full period for exchanges
-  full_period <- as.Date(max(specific_data$date)) - as.Date(min(specific_data$date))
+  full_period = as.Date(max(specific_data$date)) - as.Date(min(specific_data$date))
   
   for (simulation in 1:num_scenarios) {
     # Initialize money in base and foreign currencies
-    base_currency_amount <- amount_money
-    foreign_currency_amount <- 0
+    base_currency_amount = amount_money
+    foreign_currency_amount = 0
     
     for (exchange_index in 1:num_exchanges) {
       # Calculate the time of the next exchange
       if (exchange_index == 1) {
-        exchange_date <- as.Date(min(specific_data$date))
+        exchange_date = as.Date(min(specific_data$date))
       } else {
-        exchange_date <- exchange_date + floor(full_period / num_exchanges)
+        exchange_date = exchange_date + floor(full_period / num_exchanges)
       }
       
       # Find the closest rate up to the exchange date
-      rate_on_date <- specific_data %>%
+      rate_on_date = specific_data %>%
         filter(date <= exchange_date) %>%
         summarize(closest_rate = last(market_daily)) %>%
         pull(closest_rate)
       
+      # Randomness, Ahsan's idea
+      noise = rnorm(1, mean = 0, sd = sd(specific_data$market_daily, na.rm = TRUE))
+      rate_with_noise = rate_on_date + noise
+      
       # Convert a portion of base currency at the sampled rate
-      exchange_amount <- base_currency_amount / (num_exchanges - exchange_index + 1)
-      converted_amount <- exchange_amount * rate_on_date
-      base_currency_amount <- base_currency_amount - exchange_amount
-      foreign_currency_amount <- foreign_currency_amount + converted_amount
+      exchange_amount = base_currency_amount / (num_exchanges - exchange_index + 1)
+      converted_amount = exchange_amount * rate_with_noise
+      base_currency_amount = base_currency_amount - exchange_amount
+      foreign_currency_amount = foreign_currency_amount + converted_amount
     }
     
     # Final result is all foreign currency plus any remaining base currency
@@ -191,6 +195,14 @@ perform_simulation <- function(num_exchanges, currency_pair) {
   # Average result over all simulations
   return(mean(results, na.rm = TRUE))
 }
+
+# test_currency_pair = "AUD/JPY"
+# num_exchanges_to_test = 1
+# simulation_results = numeric(num_scenarios)
+# for (i in 1:num_scenarios) {
+#   simulation_results[i] = perform_simulation(num_exchanges_to_test, test_currency_pair)
+#   print(paste("Scenario", i, "result", simulation_results[i]))
+# }
 
 currency_pairs = unique(simulated_data$exchange)
 
@@ -208,7 +220,7 @@ for (currency_pair in currency_pairs) {
 
 # Matrix to DF 
 simulation_results_df = as.data.frame(simulation_outcomes)
-
+simulation_results_df <- round(simulation_results_df, 2)
 print(simulation_results_df)
 
 

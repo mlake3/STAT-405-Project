@@ -15,6 +15,6 @@ You should have the following csv files in your `allExchanges` directory:
 These 19 csv files are the ones that will be used in 19 parallel jobs to do our statistical analysis.
 
 ## CONTRIBUTORS
-- Ahsan Asyraf (https://github.com/AhsanAsyraf)
-- Jack Van Zeeland (https://github.com/Jack-Van-Zeeland)
-- Nick Elias (https://github.com/NVE716)
+- Ahsan Asyraf [github](https://github.com/AhsanAsyraf)
+- Jack Van Zeeland [github](https://github.com/Jack-Van-Zeeland)
+- Nick Elias [github](https://github.com/NVE716)
